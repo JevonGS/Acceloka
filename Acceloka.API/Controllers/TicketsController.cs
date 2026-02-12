@@ -1,6 +1,7 @@
 ﻿using Acceloka.API.Features.BookingTickets;
 using Acceloka.API.Features.GetAvailableTickets;
 using Acceloka.API.Features.GetBookedItems;
+using Acceloka.API.Features.RevokeTicket;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +38,7 @@ namespace Acceloka.API.Controllers
         }
 
         [HttpGet("get-booked-ticket/{BookedTicketId}")]
-        public async Task<IActionResult> GetBookedTicket(string BookedTicketId)
+        public async Task<IActionResult> GetBookedTicket([FromRoute] string BookedTicketId)
         {
             var result = await _mediator.Send(new GetBookedItems_Request_ { BookedTicketId = BookedTicketId });
             return Ok(result);
@@ -50,9 +51,18 @@ namespace Acceloka.API.Controllers
         }
 
         // DELETE api/<TicketsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("revoke-ticket/{BookedTicketId}/{TicketCode}/{Qty}")]
+        public async Task<IActionResult> RevokeTicket([FromRoute] string BookedTicketId, [FromRoute] string TicketCode, [FromRoute] int Qty)
         {
+            var result = await _mediator.Send(new RevokeTicket_Request_
+            {
+                BookedTicketId = BookedTicketId,
+                TicketCode = TicketCode,
+                Quantity = Qty
+            });
+            return Ok(result);
         }
+   
     }
+
 }
