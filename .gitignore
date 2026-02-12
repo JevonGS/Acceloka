@@ -1,0 +1,6 @@
+/logs/
+*.txt
+.vs/
+bin/
+obj/
+*.user

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../AccelokaAPI.Entities/AccelokaAPI.Entities.csproj" Id="860235a8-4b4f-4334-81c4-68bfee6dc642" />
+  <Project Path="Acceloka.API.csproj" />
+</Solution>
