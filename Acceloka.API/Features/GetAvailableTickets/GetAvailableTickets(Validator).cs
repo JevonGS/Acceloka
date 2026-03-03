@@ -24,6 +24,10 @@ namespace Acceloka.API.Features.GetAvailableTickets
                 .LessThanOrEqualTo(x => x.MaxEventDate)
                 .WithMessage("Minimal event date must less or equal than max event date.")
                 .When(x => x.MinEventDate.HasValue && x.MaxEventDate.HasValue);
+            RuleFor(x => x.OrderBy)
+                .Must(x => string.IsNullOrEmpty(x) || 
+                    new[] { "TicketName", "CategoryName", "Price", "EventDate", "TicketCode" }.Contains(x))
+                .WithMessage("OrderBy not valid.");
 
             RuleFor(x => x.OrderState)
                 .Must(x => x.ToLower() == "asc" || x.ToLower() == "desc")

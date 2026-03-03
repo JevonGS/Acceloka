@@ -5,7 +5,8 @@
     {
         public string TicketCode { get; set; } = string.Empty;
         public string TicketName { get; set; } = string.Empty;
-        public string EventDate { get; set; } = string.Empty;
+        public DateTime EventDate { get; set; }
+        public int Quantity { get; set; }
     }
         public class GetBookedItems_Response_
     {

@@ -40,7 +40,8 @@ namespace Acceloka.API.Features.GetBookedItems
                     {
                         TicketCode = z.TicketCode,
                         TicketName = z.TicketCodeNavigation.TicketName,
-                        EventDate = z.TicketCodeNavigation.EventDate.ToString("dd-MM-yyyy HH:mm")
+                        EventDate = z.TicketCodeNavigation.EventDate,
+                        Quantity = z.Quantity
                     }).ToList()
                 }).ToList();
 

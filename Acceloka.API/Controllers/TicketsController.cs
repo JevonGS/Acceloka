@@ -22,51 +22,45 @@ namespace Acceloka.API.Controllers
 
         // GET: api/<TicketsController>
         [HttpGet("get-available-ticket")]
-        public async Task<IActionResult> GetAvailableTicket([FromQuery] GetAvailableTickets_Request_ request)
+        public async Task<IResult> GetAvailableTicket([FromQuery] GetAvailableTickets_Request_ request)
         {
-            var result = await _mediator.Send(request);
-
-            return Ok(result);
+            return await _mediator.Send(request);
         }
 
         // POST api/<TicketsController>
         [HttpPost("book-ticket")]
-        public async Task<IActionResult> BookTicket([FromBody] BookingTickets_Request_ request)
+        public async Task<IResult> BookTicket([FromBody] BookingTickets_Request_ request)
         {
-            var result = await _mediator.Send(request);
-
-            return Ok(result);
+            return await _mediator.Send(request);
         }
 
         [HttpGet("get-booked-ticket/{BookedTicketId}")]
-        public async Task<IActionResult> GetBookedTicket([FromRoute] string BookedTicketId)
+        public async Task<IResult> GetBookedTicket([FromRoute] string BookedTicketId)
         {
             var result = await _mediator.Send(new GetBookedItems_Request_ { BookedTicketId = BookedTicketId });
-            return Ok(result);
+            return result;
         }
 
         // DELETE api/<TicketsController>/5
         [HttpDelete("revoke-ticket/{BookedTicketId}/{TicketCode}/{Qty}")]
-        public async Task<IActionResult> RevokeTicket([FromRoute] string BookedTicketId, [FromRoute] string TicketCode, [FromRoute] int Qty)
+        public async Task<IResult> RevokeTicket([FromRoute] string BookedTicketId, [FromRoute] string TicketCode, [FromRoute] int Qty)
         {
-            var result = await _mediator.Send(new RevokeTicket_Request_
+            return await _mediator.Send(new RevokeTicket_Request_
             {
                 BookedTicketId = BookedTicketId,
                 TicketCode = TicketCode,
                 Quantity = Qty
             });
-            return Ok(result);
         }
 
         [HttpPut("edit-booked-ticket/{BookedTicketId}")]
-        public async Task<IActionResult> EditQuantity([FromRoute] string BookedTicketId, [FromBody] List<Items> items)
+        public async Task<IResult> EditQuantity([FromRoute] string BookedTicketId, [FromBody] List<Items> items)
         {
-            var result = await _mediator.Send(new EditTicketQty_Request_
+            return await _mediator.Send(new EditTicketQty_Request_
             {
                 BookedTicketId = BookedTicketId,
                 EditTicketQuantity = items
             });
-            return Ok(result);
         }
    
     }
