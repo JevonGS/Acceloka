@@ -13,29 +13,27 @@ namespace Acceloka.API.Features.RevokeTicket
         }
         public async Task<IResult> Handle(RevokeTicket_Request_ request, CancellationToken cancellationToken)
         {
+            var booking = await _db.BookedTicketDbs
+                .FirstOrDefaultAsync(x => x.BookedTicketId == request.BookedTicketId, cancellationToken);
+            
+            if (booking == null)
+            {
+                return Results.NotFound(new { detail = "Booked ticket ID not found." });
+            }
+
             var bookedItem = await _db.BookedTicketDbs
                 .Include(x => x.TicketCodeNavigation)
-                .FirstOrDefaultAsync(x => x.BookedTicketId == request.BookedTicketId
-                                     && x.TicketCode == request.TicketCode, cancellationToken);
+                .FirstOrDefaultAsync(x => x.BookedTicketId == request.BookedTicketId 
+                                    && x.TicketCode == request.TicketCode, cancellationToken);
 
             if (bookedItem == null)
             {
-                return Results.Problem(
-                    detail: "Booked ticket id not registered.",
-                    statusCode: 400,
-                    title: "Bad Request"
-                    );
+                return Results.BadRequest(new { detail = "Ticket code not found." });
             }
-
             if (request.Quantity > bookedItem.Quantity)
             {
-                return Results.Problem(
-                    detail: "Quantity exceeds the quantity ordered.",
-                    statusCode: 400,
-                    title: "Bad Request"
-                    );
+                return Results.BadRequest(new { detail = "Quantity cannot exceed the quantity ordered." });
             }
-
             var ticket = await _db.TicketDbs
                 .FirstOrDefaultAsync(x => x.TicketCode == request.TicketCode, cancellationToken);
 
@@ -45,7 +43,6 @@ namespace Acceloka.API.Features.RevokeTicket
             }
 
             bookedItem.Quantity -= request.Quantity;
-            var finalQt = bookedItem.Quantity;
 
             if (bookedItem.Quantity == 0)
             {
@@ -53,7 +50,6 @@ namespace Acceloka.API.Features.RevokeTicket
             }
 
             await _db.SaveChangesAsync(cancellationToken);
-
             var result = await _db.BookedTicketDbs
                 .Include(x => x.TicketCodeNavigation)
                 .Where(x => x.BookedTicketId == request.BookedTicketId)
@@ -65,7 +61,6 @@ namespace Acceloka.API.Features.RevokeTicket
                     CategoryName = z.TicketCodeNavigation.CategoryName
                 })
                 .ToListAsync(cancellationToken);
-
             return Results.Ok(result);
         }
     }

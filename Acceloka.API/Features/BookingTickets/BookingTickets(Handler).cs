@@ -64,19 +64,26 @@ namespace Acceloka.API.Features.BookingTickets
             }
 
             var bookedList = new List<BookedTicketDB>();
-            foreach (var item in request.BookingItems)
+
+            var groupedItems = request.BookingItems
+            .GroupBy(x => x.TicketCode).Select(g => new { 
+                TicketCode = g.Key, 
+                TotalQuantity = g.Sum(x => x.Quantity)
+            });
+
+            foreach (var group in groupedItems)
             {
-                var ticket = dbTickets.First(x => x.TicketCode == item.TicketCode);
+                var ticket = dbTickets.First(x => x.TicketCode == group.TicketCode);
 
                 bookedList.Add(new BookedTicketDB
                 {
                     BookedTicketId = bookedTicketId,
-                    TicketCode = item.TicketCode,
-                    Quantity = item.Quantity,
+                    TicketCode = group.TicketCode,
+                    Quantity = group.TotalQuantity,
                     BookedEventDate = today
                 });
 
-                ticket.Quota -= item.Quantity;
+                ticket.Quota -= group.TotalQuantity;
             }
 
             _db.BookedTicketDbs.AddRange(bookedList);
